@@ -8,6 +8,7 @@ import android.os.PerformanceHintManager
 import android.os.Process
 import android.util.Log
 import android.view.Choreographer
+import android.widget.Toast
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.TimeSource
@@ -30,7 +31,7 @@ class GeckoThread(name: String, context: Context) : HandlerThread(name),
     private var frameId = 0
     private var totalDuration: Duration = Duration.ZERO
 
-    fun updateSettings(workload: Int, phmEnabled: Boolean, budget: Duration) {
+    fun updateSettings(context: Context, workload: Int, phmEnabled: Boolean, budget: Duration) {
         Log.d(
             LOGTAG,
             "updateSettings() workload: $workload, PHM enabled: $phmEnabled, budget: $budget"
@@ -41,7 +42,10 @@ class GeckoThread(name: String, context: Context) : HandlerThread(name),
         if (phmEnabled && !this.phmEnabled) {
             perfHintSession = perfHintManager.createHintSession(
                 intArrayOf(Process.myTid()), budget.inWholeNanoseconds
-            )!!
+            )
+            if (perfHintSession == null) {
+                Toast.makeText(context, "Failed to create Performance Hint Session", Toast.LENGTH_SHORT).show()
+            }
         } else if (!phmEnabled && this.phmEnabled) {
             perfHintSession?.close()
             perfHintSession = null

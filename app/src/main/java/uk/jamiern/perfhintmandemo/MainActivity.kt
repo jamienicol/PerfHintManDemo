@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
         val handler = Handler(geckoThread.looper)
         handler.post {
             geckoThread.updateSettings(
-                workloadValues[selectedWorkload], phmEnabled, budgetValues[selectedBudget]
+                this, workloadValues[selectedWorkload], phmEnabled, budgetValues[selectedBudget]
             )
         }
     }
